@@ -96,6 +96,9 @@ def openAnything(source, etag=None, lastmodified=None, agent=USER_AGENT, post_da
     protocol = urlparse.urlparse(source)[0]
     if protocol == 'http' or protocol == 'https':
         # open URL with urllib2
+        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        passman.add_password(None, source, 'vincent-rou@hotmail.fr', '091186')
+        #urllib2.install_opener(urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman)))
         request = urllib2.Request(source)
         request.add_header('User-Agent', agent)
         if lastmodified:
@@ -109,7 +112,7 @@ def openAnything(source, etag=None, lastmodified=None, agent=USER_AGENT, post_da
         elif post_data:
             request.add_data(encode_post_data(post_data))
         request.add_header('Accept-encoding', 'gzip')
-        opener = urllib2.build_opener(SmartRedirectHandler(), DefaultErrorHandler())
+        opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman),SmartRedirectHandler(), DefaultErrorHandler())
         return opener.open(request)
 
     # try to open with native open function (if source is a filename)
