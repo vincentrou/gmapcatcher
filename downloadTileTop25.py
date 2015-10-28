@@ -21,11 +21,13 @@ if len(sys.argv) > 3 and len(sys.argv) != 5:
   print sys.argv[0], "lon lat (in decimal degree) start_level nb_level"
   sys.exit(2)
 
-start_level = int(sys.argv[3])
-nb_level = int(sys.argv[4])
+if len(sys.argv) > 3:
+    start_level = int(sys.argv[3])
+    nb_level = int(sys.argv[4])
+else:
+    start_level = 15
+    nb_level = 1
 
-# Top25 zoom level
-ZOOM="15"
 
 # convert (lon,lat) to (x,y) web-mercator coordinates in meters
 lon = float(sys.argv[1])
@@ -34,35 +36,25 @@ lat = float(sys.argv[2])
 (x, y) = lonlat2tilecoord.lonlat2xy(lon, lat)
 (tilecol, tilerow, tilesize) = lonlat2tilecoord.xy2colrow(x, y, start_level)
 
-(orig_lon, orig_lat) = lonlat2tilecoord.xy2lonlat((tilecol)*tilesize, (tilerow)*tilesize)
-#print("orig_lon "+str(orig_lon)+" orig_lat "+str(orig_lat))
-u = utm.from_latlon(orig_lat, orig_lon)
-print("0,0")
-print(u)
-(orig_lon, orig_lat) = lonlat2tilecoord.xy2lonlat((tilecol+1)*tilesize, (tilerow+1)*tilesize)
-#print("orig_lon "+str(orig_lon)+" orig_lat "+str(orig_lat))
-u = utm.from_latlon(orig_lat, orig_lon)
-print("max,max")
-print(u)
-(orig_lon, orig_lat) = lonlat2tilecoord.xy2lonlat((tilecol)*tilesize, (tilerow+1)*tilesize)
-#print("orig_lon "+str(orig_lon)+" orig_lat "+str(orig_lat))
-u = utm.from_latlon(orig_lat, orig_lon)
-print("0,max")
-print(u)
+for i in range(2):
+    for j in range(2):
+        pix_x = int(math.pow(2,nb_level-1))*256*i
+        pix_y = int(math.pow(2,nb_level-1))*256*j
+        (orig_lon, orig_lat) = lonlat2tilecoord.xy2lonlat((tilecol+i)*tilesize, (tilerow+j)*tilesize)
+        #print("orig_lon "+str(orig_lon)+" orig_lat "+str(orig_lat))
+        u = utm.from_latlon(orig_lat, orig_lon)
+        print(" - point: [%d, %d, %f, %f]"%(pix_x, pix_y, u[0],u[1]))
 
+orig_x = tilecol*tilesize +1
+orig_y = tilerow*tilesize +1
 for l in range(nb_level):
-    # convert (lon,lat) to (x,y) web-mercator coordinates in meters
-    lon = float(sys.argv[1])
-    lat = float(sys.argv[2])
-
-    (x, y) = lonlat2tilecoord.lonlat2xy(lon, lat)
-    (tilecol, tilerow, tilesize) = lonlat2tilecoord.xy2colrow(x, y, start_level+l)
+    (tilecol, tilerow, tilesize) = lonlat2tilecoord.xy2colrow(orig_x, orig_y, start_level+l)
 
     #### Generate URL from (COL,ROW,ZOOM) for GetTile request #####
     for i in range(int(math.pow(2,l))):
         for j in range(int(math.pow(2,l))):
             #print("col "+str(tilecol+i)+" row " +str(tilerow+j)+" zoom " +str(start_level+l))
-            #get_tile(tilecol, i, tilerow, j, start_level, l, nb_level)
+            get_tile(tilecol, i, tilerow, j, start_level, l, nb_level)
             pass
 
 # EOF
