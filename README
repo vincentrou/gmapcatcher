@@ -2,3 +2,6 @@ GMapCatcher - An offline map viewer
 
 HomePage: http://code.google.com/p/gmapcatcher/
 
+### To create multires_image for mapviz with ign server (French map)
+
+ python downloadTileTop25.py lon lat
