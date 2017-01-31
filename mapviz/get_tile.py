@@ -4,9 +4,9 @@ import urllib2
 APIKEY = "3vczznk2bngd821d4jc3c9fd"
 REFERER = ""
 # maximum level = 18; level = 16 : carte topo 25
-LAYER = "GEOGRAPHICALGRIDSYSTEMS.MAPS"
+#LAYER = "GEOGRAPHICALGRIDSYSTEMS.MAPS"
 # maximum level = 19
-#LAYER = "ORTHOIMAGERY.ORTHOPHOTOS"
+LAYER = "ORTHOIMAGERY.ORTHOPHOTOS"
 
 ## Checks if a directory exist if not it will be created
 def check_dir(strPath, strSubPath=None):
@@ -42,7 +42,7 @@ def get_tile(tilecol, inc_col, tilerow, inc_row, ref_zoom, inc_zoom, nb_zoom):
     ##### launch HTTP request and save output #####
 
     passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-    passman.add_password(None, URL, 'vincent-rou@hotmail.fr', '091186')
+    passman.add_password(None, URL, 'vincent-rou@hotmail.fr', 'passwd')
     urllib2.install_opener(urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman)))
     req = urllib2.Request(URL)
     #req.add_header('Referer', REFERER)
